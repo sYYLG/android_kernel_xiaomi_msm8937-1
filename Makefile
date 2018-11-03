@@ -643,7 +643,12 @@ KBUILD_AFLAGS	+= $(call cc-option,-fno-PIE)
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= $(call cc-option,-Oz,-Os) $(call cc-disable-warning,maybe-uninitialized,)
 else
-KBUILD_CFLAGS	+= -O3
+KBUILD_CFLAGS	+= -O3 -ffast-math -funsafe-math-optimizations
+ifeq ($(cc-name),clang)
+KBUILD_CFLAGS	+= -mcpu=cortex-a75.cortex-a55 -mtune=cortex-a75.cortex-a55 -floop-nest-optimize -fgraphite-identity -ftree-loop-distribution
+else
+KBUILD_CFLAGS	+= -mcpu=cortex-a55 -mtune=cortex-a55
+endif
 endif
 
 ifdef CONFIG_CC_WERROR
