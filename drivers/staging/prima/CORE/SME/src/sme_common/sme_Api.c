@@ -1602,9 +1602,7 @@ eHalStatus sme_Open(tHalHandle hHal)
 
       sme_p2pOpen(pMac);
       smeTraceInit(pMac);
-#ifdef SME_TRACE_RECORD
       sme_register_debug_callback();
-#endif
 
    }while (0);
 
@@ -7035,7 +7033,6 @@ VOS_STATUS sme_DbgWriteMemory(tHalHandle hHal, v_U32_t memAddr, v_U8_t *pBuf, v_
 }
 
 
-#ifdef WLAN_DEBUG
 void pmcLog(tpAniSirGlobal pMac, tANI_U32 loglevel, const char *pString, ...)
 {
     VOS_TRACE_LEVEL  vosDebugLevel;
@@ -7056,6 +7053,7 @@ void pmcLog(tpAniSirGlobal pMac, tANI_U32 loglevel, const char *pString, ...)
 
 void smsLog(tpAniSirGlobal pMac, tANI_U32 loglevel, const char *pString,...)
 {
+#ifdef WLAN_DEBUG
     // Verify against current log level
     if ( loglevel > pMac->utils.gLogDbgLevel[LOG_INDEX_FOR_MODULE( SIR_SMS_MODULE_ID )] )
         return;
@@ -7069,8 +7067,8 @@ void smsLog(tpAniSirGlobal pMac, tANI_U32 loglevel, const char *pString,...)
 
         va_end( marker );              /* Reset variable arguments.      */
     }
-}
 #endif
+}
 
 /* ---------------------------------------------------------------------------
     \fn sme_GetWcnssWlanCompiledVersion
@@ -15373,4 +15371,13 @@ VOS_STATUS sme_process_msg_callback(tHalHandle hal, vos_msg_t *msg)
    status = sme_ProcessMsg(hal, msg);
 
    return status;
+}
+
+uint32_t sme_unpack_rsn_ie(tHalHandle hal, uint8_t *buf,
+                           uint8_t buf_len,
+                           tDot11fIERSN *rsn_ie)
+{
+         tpAniSirGlobal mac_ctx = PMAC_STRUCT(hal);
+
+         return dot11fUnpackIeRSN(mac_ctx, buf, buf_len, rsn_ie);
 }
